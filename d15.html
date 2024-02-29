@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text to Speech Converter</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(45deg, yellow, green);
+  }
+  textarea {
+    width: 80%;
+    height: 200px;
+    margin: 20px auto;
+    resize: none;
+    padding: 10px;
+    font-size: 16px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  select {
+            color: #000000;
+            background: rgb(156, 156, 156);
+            height: 50px;
+            padding: 0 20px;
+            outline: 0;
+            border: 0;
+            border-radius: 35px;
+        }
+</style>
+</head>
+<body>
+<h1>Text to Speech Converter</h1>
+<textarea id="textToSpeak" placeholder="Enter text here..."></textarea>
+<select></select>
+<button onclick="speak()">Speak</button>
+
+<script>
+function speak() {
+  var text = document.getElementById('textToSpeak').value;
+  var speech = new SpeechSynthesisUtterance();
+  speech.text = text;
+  // You can change the voice here, depending on the browser, the voices may vary.
+  // This is where Microsoft voices might appear if they are installed.
+  speech.voice = speechSynthesis.getVoices()[0]; // Change the index to choose a different voice
+  speechSynthesis.speak(speech);
+}
+
+let speech = new SpeechSynthesisUtterance(); // Change from Speech to speech
+    
+    let voices = [];
+    let voiceSelect = document.querySelector("select");
+    
+    window.speechSynthesis.onvoiceschanged = () => {
+        voices = window.speechSynthesis.getVoices();
+        speech.voice = voices[0];
+
+        voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
+    };
+
+    voiceSelect.addEventListener("change", () => {
+        speech.voice = voices[voiceSelect.value];
+    });
+</script>
+</body>
+</html>
