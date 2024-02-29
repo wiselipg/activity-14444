@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Clock</title>
+	<style>
+
+body {
+            padding: 40px;
+            width: 60%;
+            height: 400px;
+            margin: 0 auto;
+            border: 3px solid rgb(0, 0, 0);  
+            border-radius: 5px;  
+            padding: 150px 70px;  
+            background-image: linear-gradient(45deg, #dbaf7c , #c2a15b);
+        }
+
+        #clock {
+            height:120px;
+            font-size: 80px;
+            font-family: arial;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(0, 0, 0) 50%, rgb(52, 41, 107) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -moz-text-fill-color: transparent;
+        }
+
+        h2 {
+            text-align:center;
+        }
+
+        #alarm-container {
+            text-align:center;
+            font-family: Verdana;
+            font-size: 0.6em;
+            padding: 0.7em;
+            color: rgb(7, 7, 7);
+        }
+
+        label {
+            display:inline-block;
+        }
+
+        .timeofday {
+            background-color: #423333;
+        }
+
+        .bigger {
+            font-weight:bold;
+            font-size: 18px;
+        }
+
+        #sounds {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        #buttonHolder {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .button {
+            background-color: rgb(0, 0, 0);
+            color: white;
+            margin: 0 5px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+        #setButton {
+            background-color: rgb(196, 196, 197);
+            color: rgb(0, 0, 0);
+        }
+        #clearButton {
+            background-color: rgb(175, 175, 175);
+            color: rgb(0, 0, 0);
+        }
+    </style>
+	<body>
+		<div id='main-container'>
+			<h2 id='clock'></h2>
+		</div>
+
+		<div id='alarm-container'>
+			<h3>Set Alarm Time</h3>
+				<label>
+					<div>
+					<select id='alarmhrs' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+					<select id='alarmmins' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+					<select id='alarmsecs' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+						<select id="ampm">
+							<option value="AM">AM</option>
+							<option value="PM">PM</option>
+						</select>
+					</div>
+				</label>
+				</div>
+		</div>
+
+		<div id='buttonHolder'>
+			<div>
+				<button  id='setButton' onClick='alarmSet()'>Set Alarm</button>
+			</div>
+
+			<div>
+				<button  id='clearButton' onClick='alarmClear()'>Clear Alarm</button>
+			</div>
+		</div>
+
+		<script>
+            var sound = new Audio("mixkit-alarm-tone-996.wav");
+sound.loop = true;
+
+var h2 = document.getElementById('clock');
+var alarmTime = null; // Define alarmTime globally
+
+// display current time by the second
+var currentTime = setInterval(function(){
+    var date = new Date();
+    
+    var hours = (12 - (date.getHours()));
+    // var hours = date.getHours();
+    
+    var minutes = date.getMinutes();
+    
+    var seconds = date.getSeconds();
+    
+    var ampm = (date.getHours()) < 12 ? 'AM' : 'PM';
+
+
+    //convert military time to standard time
+
+    if (hours < 0) {
+        hours = hours * -1;
+    } else if (hours == 0) {
+        hours = 12;
+    } else {
+        hours = hours;
+    }
+
+    
+    h2.textContent = addZero(hours) + ":" + addZero(minutes) + ":" + addZero(seconds) + "" + ampm;
+    
+},1000);
+
+
+/*functions to get hour, min, secs, 
+  am or pm, add zero, set alarm time and sound, clear alarm
+*/
+
+function addZero(time) {
+    return (time < 10) ? "0" + time : time;
+}
+
+function hoursMenu(){
+    var select = document.getElementById('alarmhrs');
+    var hrs = 12;
+
+    for (i=1; i <= hrs; i++) {
+        select.options[select.options.length] = new Option( i < 10 ? "0" + i : i, i);
+    }
+}
+hoursMenu();
+
+function minMenu(){
+    var select = document.getElementById('alarmmins');
+    var min = 59;
+
+    for (i=0; i <= min; i++) {
+        select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);
+    }
+}
+minMenu();
+
+function secMenu(){
+    var select = document.getElementById('alarmsecs');
+    var sec = 59;
+
+    for (i=0; i <= sec; i++) {
+        select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);
+    }
+}
+secMenu();
+
+
+function alarmSet() {
+
+    var hr = document.getElementById('alarmhrs');
+    
+    var min = document.getElementById('alarmmins');
+    
+    var sec = document.getElementById('alarmsecs');
+    
+    var ap = document.getElementById('ampm');
+    
+
+    var selectedHour = hr.options[hr.selectedIndex].value;
+    var selectedMin = min.options[min.selectedIndex].value;
+    var selectedSec = sec.options[sec.selectedIndex].value;
+    var selectedAP = ap.options[ap.selectedIndex].value;
+
+    alarmTime = addZero(selectedHour) + ":" + addZero(selectedMin) + ":" + addZero(selectedSec) + selectedAP;
+    console.log('alarmTime:' + alarmTime);
+
+    document.getElementById('alarmhrs').disabled = true;
+    document.getElementById('alarmmins').disabled = true;
+    document.getElementById('alarmsecs').disabled = true;
+    document.getElementById('ampm').disabled = true;
+
+}
+
+function alarmClear() {
+    document.getElementById('alarmhrs').disabled = false;
+    document.getElementById('alarmmins').disabled = false;
+    document.getElementById('alarmsecs').disabled = false;
+    document.getElementById('ampm').disabled = false;
+    sound.pause();
+}
+
+// Function to check alarm every second
+setInterval(function(){
+
+    var date = new Date();
+    
+    var hours = (12 - (date.getHours()));
+    // var hours = date.getHours();
+    
+    var minutes = date.getMinutes();
+    
+    var seconds = date.getSeconds();
+    
+    var ampm = (date.getHours()) < 12 ? 'AM' : 'PM';
+
+
+    //convert military time to standard time
+
+    if (hours < 0) {
+        hours = hours * -1;
+    } else if (hours == 0) {
+        hours = 12;
+    } else {
+        hours = hours;
+    }
+    
+    var currentTime = h2.textContent = addZero(hours) + ":" + addZero(minutes) + ":" + addZero(seconds) + "" + ampm;
+
+    // Check if current time matches alarm time
+    if (alarmTime == currentTime) {
+        sound.play();
+    }
+
+},1000);
+
+	// console.log('currentTime:' + currentTime);	
+
+
+
+
+function alarmClear() {
+
+	document.getElementById('alarmhrs').disabled = false;
+	document.getElementById('alarmmins').disabled = false;
+	document.getElementById('alarmsecs').disabled = false;
+	document.getElementById('ampm').disabled = false;
+	sound.pause();
+}
+
+
+
+        </script>
+	</body>
+</html>
